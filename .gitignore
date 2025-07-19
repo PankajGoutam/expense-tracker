@@ -40,3 +40,6 @@ frontend/.turbo/
 # Testing
 coverage/
 .nyc_output/
+
+# Uploads
+server/src/uploads/
