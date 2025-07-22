@@ -50,10 +50,25 @@ const AddExpenses = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(addExpense(form));
-    dispatch(closeAddExpenseForm());
+    try {
+      await dispatch(addExpense(form)).unwrap();
+      setForm({
+        user: userId,
+        amount: "",
+        category: "",
+        date: "",
+        notes: "",
+        receipt: null,
+      });
+      setCategoryCount(0);
+      setNotesCount(0);
+      setFileName("");
+      dispatch(closeAddExpenseForm());
+    } catch (err) {
+      console.error("Error adding expense:", err);
+    }
   };
 
   if (!isAddExpenseFormOpen) return null;
@@ -74,7 +89,11 @@ const AddExpenses = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          encType="multipart/form-data"
+          className="space-y-4"
+        >
           <div>
             <label className="block font-medium mb-1">Amount</label>
             <input

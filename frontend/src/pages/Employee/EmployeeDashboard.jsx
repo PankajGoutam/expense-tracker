@@ -42,8 +42,10 @@ const EmployeeDashboard = () => {
         <p className="text-red-500">{error}</p>
       ) : list.length === 0 ? (
         <div className="flex items-center justify-center h-40">
-    <p className="text-gray-500 text-center text-lg">No expenses listed.</p>
-  </div>
+          <p className="text-gray-500 text-center text-lg">
+            No expenses listed.
+          </p>
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full bg-white shadow rounded text-sm">
