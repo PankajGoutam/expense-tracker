@@ -42,6 +42,19 @@ export const addExpense = createAsyncThunk(
   }
 );
 
+// PUT (Update) expense status
+export const updateExpenseStatus = createAsyncThunk(
+  "expenses/updateExpenseStatus",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const res = await axios.put(`api/expenses/${id}/status`, { status });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Failed to update status");
+    }
+  }
+);
+
 // Slice
 const expenseSlice = createSlice({
   name: "expenses",
@@ -75,6 +88,22 @@ const expenseSlice = createSlice({
         state.list.push(action.payload); // add new expense to list
       })
       .addCase(addExpense.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // PUT expense status
+      .addCase(updateExpenseStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateExpenseStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.list.findIndex(exp => exp._id === action.payload._id);
+        if (index !== -1) {
+          state.list[index] = action.payload;
+        }
+      })
+      .addCase(updateExpenseStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

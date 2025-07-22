@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { getExpenses } from "../../redux/Slices/expenseSlice";
+import { getExpenses,updateExpenseStatus } from "../../redux/Slices/expenseSlice";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -9,6 +9,15 @@ const AdminDashboard = () => {
   useEffect(() => {
     dispatch(getExpenses());
   }, [dispatch]);
+
+  // Filter only pending expenses
+  const pendingExpenses = list?.filter((list) => list.status === "pending");
+
+  const handleStatusChange = (id, status) => {
+    dispatch(updateExpenseStatus({ id, status })).then(() => {
+      dispatch(getExpenses());
+    });
+  };
 
   return (
     <div className="p-6">
@@ -20,6 +29,8 @@ const AdminDashboard = () => {
         <p>Loading...</p>
       ) : error ? (
         <p className="text-red-500">{error}</p>
+      ) : pendingExpenses?.length === 0 ? (
+        <p>No pending expenses.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full bg-white shadow rounded">
@@ -34,14 +45,30 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {list.map((expense) => (
+              {pendingExpenses.map((expense) => (
                 <tr key={expense._id} className="border-b">
                   <td className="p-3">{expense?.user?.name}</td>
                   <td className="p-3">{expense.category}</td>
                   <td className="p-3">₹{expense.amount}</td>
                   <td className="p-3">{expense.notes}</td>
-                  <td className="p-3 capitalize">{expense.status}</td>
-                  <td className="p-3">{new Date(expense.date).toLocaleDateString()}</td>
+                  <td className="p-3 capitalize">
+                    <select
+                      className="border rounded p-1"
+                      defaultValue=""
+                      onChange={(e) =>
+                        handleStatusChange(expense._id, e.target.value)
+                      }
+                    >
+                      <option value="" disabled>
+                        {expense.status}
+                      </option>
+                      <option value="approved">Approve</option>
+                      <option value="rejected">Reject</option>
+                    </select>
+                  </td>
+                  <td className="p-3">
+                    {new Date(expense.date).toLocaleDateString()}
+                  </td>
                 </tr>
               ))}
             </tbody>
