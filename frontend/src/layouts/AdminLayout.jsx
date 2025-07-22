@@ -1,0 +1,22 @@
+import AdminSidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
+
+const AdminLayout = ({ children }) => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Top Navbar */}
+      <Navbar />
+
+      {/* Body: Sidebar + Page Content */}
+      <div className="flex flex-1">
+        <AdminSidebar />
+
+        <main className="flex-1 p-6 bg-gray-100">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default AdminLayout;

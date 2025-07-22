@@ -1,24 +1,51 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "../../api/axios";
 
-const initialState = {
-  user: null,
-  token: null,
-};
+export const loginUser = createAsyncThunk(
+  "auth/loginUser",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await axios.post("/auth/login", data);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Login failed");
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState: {
+    user: null,
+    token: localStorage.getItem("token") || null,
+    loading: false,
+    error: null,
+  },
   reducers: {
-    setCredentials: (state, action) => {
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-    },
     logout: (state) => {
       state.user = null;
       state.token = null;
+      localStorage.removeItem("token");
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        localStorage.setItem("token", action.payload.token);
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;
