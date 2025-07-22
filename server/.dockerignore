@@ -1,7 +1,5 @@
 node_modules
 uploads
 .env
-tests
-.git
 Dockerfile
 docker-compose.yml
