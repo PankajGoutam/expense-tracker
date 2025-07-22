@@ -17,15 +17,13 @@ const Login = () => {
     e.preventDefault();
     const result = await dispatch(loginUser(form));
     if (result.meta.requestStatus === "fulfilled") {
-      const role = result.payload.role;
-      navigate(role === "admin" ? "/admin" : "/employee");
+      navigate("/dashboard");
     }
   };
 
   useEffect(() => {
     if (token && user) {
-      const role = user.role;
-      navigate(role === "admin" ? "/admin" : "/employee");
+      navigate("/dashboard");
     }
   }, [token, user]);
 

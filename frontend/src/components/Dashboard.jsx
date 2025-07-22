@@ -1,8 +1,15 @@
+import { useSelector } from "react-redux";
+import AdminDashboard from "../pages/Admin/AdminDashboard";
+import EmployeeDashboard from "../pages/Employee/EmployeeDashboard";
+
 const Dashboard = () => {
+  const { user } = useSelector((state) => state.auth);
+  const role = user?.role;
+
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold"> Dashboard</h2>
-    </div>
+    <>
+      {role === "admin" ? <AdminDashboard /> : <EmployeeDashboard />}
+    </>
   );
 };
 

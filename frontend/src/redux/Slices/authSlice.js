@@ -13,19 +13,22 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+const initialState = {
+  user: null,
+  token: null,
+  loading: false,
+  error: null,
+};
+
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    user: null,
-    token: localStorage.getItem("token") || null,
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
   },
   extraReducers: (builder) => {
@@ -36,13 +39,19 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = {
+          _id: action.payload._id,
+          name: action.payload.name,
+          email: action.payload.email,
+          role: action.payload.role,
+        };
         state.token = action.payload.token;
+        localStorage.setItem("user", JSON.stringify(state.user));
         localStorage.setItem("token", action.payload.token);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload?.message || "Login failed";
       });
   },
 });

@@ -1,7 +1,11 @@
 import AdminSidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import { useSelector } from "react-redux";
 
-const AdminLayout = ({ children }) => {
+const Layout = ({ children }) => {
+  const { user } = useSelector((state) => state.auth);
+  const role = user?.role;
+  console.log("role : ",role)
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Navbar */}
@@ -9,7 +13,9 @@ const AdminLayout = ({ children }) => {
 
       {/* Body: Sidebar + Page Content */}
       <div className="flex flex-1">
-        <AdminSidebar />
+        {role === "admin" && (
+          <AdminSidebar/>
+        )}
 
         <main className="flex-1 p-6 bg-gray-100">
           {children}
@@ -19,4 +25,4 @@ const AdminLayout = ({ children }) => {
   );
 };
 
-export default AdminLayout;
+export default Layout;

@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Auth/Login";
-import AdminLayout from "./layouts/AdminLayout";
+import Layout from "./layouts/Layout";
 import Insights from "./pages/Admin/Insights";
 import AuditLogs from "./pages/Admin/AuditLogs";
 import Dashboard from "./components/Dashboard"
@@ -16,20 +16,12 @@ function App() {
         <Route path="/" element={<Login />} />
 
         <Route
-          path="/admin"
+          path="/dashboard"
           element={
             <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/expenses"
-          element={
-            <ProtectedRoute>
-              <AdminLayout>
+              <Layout>
                 <Dashboard />
-              </AdminLayout>
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -37,9 +29,9 @@ function App() {
           path="/insights"
           element={
             <ProtectedRoute>
-              <AdminLayout>
+              <Layout>
                 <Insights />
-              </AdminLayout>
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -47,17 +39,9 @@ function App() {
           path="/audit-logs"
           element={
             <ProtectedRoute>
-              <AdminLayout>
+              <Layout>
                 <AuditLogs />
-              </AdminLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employee"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
+              </Layout>
             </ProtectedRoute>
           }
         />

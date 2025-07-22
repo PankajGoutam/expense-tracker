@@ -5,7 +5,7 @@ const AdminSidebar = () => {
     <div className="w-60 h-screen bg-gray-800 text-white p-4">
       <nav className="flex flex-col gap-4">
         <NavLink
-          to="/expenses"
+          to="/dashboard"
           className={({ isActive }) =>
             isActive ? "text-blue-400" : "text-white"
           }
