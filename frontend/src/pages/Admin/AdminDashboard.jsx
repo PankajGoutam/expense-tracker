@@ -25,29 +25,23 @@ const AdminDashboard = () => {
           <table className="w-full bg-white shadow rounded">
             <thead className="bg-gray-100">
               <tr>
-                <th className="text-left p-3">Date</th>
+                <th className="text-left p-3">User</th>
                 <th className="text-left p-3">Category</th>
                 <th className="text-left p-3">Amount</th>
                 <th className="text-left p-3">Notes</th>
                 <th className="text-left p-3">Status</th>
-                <th className="text-left p-3">Action</th>
+                <th className="text-left p-3">Date</th>
               </tr>
             </thead>
             <tbody>
               {list.map((expense) => (
                 <tr key={expense._id} className="border-b">
-                  <td className="p-3">{new Date(expense.date).toLocaleDateString()}</td>
+                  <td className="p-3">{expense?.user?.name}</td>
                   <td className="p-3">{expense.category}</td>
                   <td className="p-3">₹{expense.amount}</td>
                   <td className="p-3">{expense.notes}</td>
                   <td className="p-3 capitalize">{expense.status}</td>
-                    <td className="p-3">
-                      <select className="border p-1 rounded">
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                      </select>
-                    </td>
+                  <td className="p-3">{new Date(expense.date).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
