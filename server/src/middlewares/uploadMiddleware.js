@@ -1,5 +1,4 @@
 const multer = require('multer');
-const path = require('path');
 
 // Storage config (optional if mocking)
 const storage = multer.diskStorage({

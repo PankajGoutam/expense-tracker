@@ -16,7 +16,7 @@ const Navbar = () => {
       <h1 className="text-xl font-bold">Expense Tracker</h1>
       <button
         onClick={handleLogout}
-        className="bg-red-500 text-white px-4 py-1 rounded"
+        className="bg-red-500 text-white px-4 py-1 rounded cursor-pointer"
       >
         Logout
       </button>

@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../api/axios";
 
+// GET expenses
 export const getExpenses = createAsyncThunk(
   "expenses/getExpenses",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get("/expenses"); // Adjust this endpoint to match backend
+      const res = await axios.get("api/expenses");
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Failed to fetch expenses");
@@ -13,6 +14,35 @@ export const getExpenses = createAsyncThunk(
   }
 );
 
+// POST (Add) expense
+export const addExpense = createAsyncThunk(
+  "expenses/addExpense",
+  async (expenseData, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("user", expenseData.user);
+      formData.append("amount", expenseData.amount);
+      formData.append("category", expenseData.category);
+      formData.append("date", expenseData.date);
+      formData.append("notes", expenseData.notes);
+      if (expenseData.receipt) {
+        formData.append("receipt", expenseData.receipt); // Image file
+      }
+
+      const res = await axios.post("api/expenses", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Failed to add expense");
+    }
+  }
+);
+
+// Slice
 const expenseSlice = createSlice({
   name: "expenses",
   initialState: {
@@ -32,6 +62,19 @@ const expenseSlice = createSlice({
         state.list = action.payload;
       })
       .addCase(getExpenses.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // POST handler
+      .addCase(addExpense.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addExpense.fulfilled, (state, action) => {
+        state.loading = false;
+        state.list.push(action.payload); // add new expense to list
+      })
+      .addCase(addExpense.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
