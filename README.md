@@ -51,10 +51,12 @@ npm install
 
 ➕ Create .env file inside /server directory:
 
+```bash
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
 CLIENT_URL=http://localhost:3000
+```
 
 ⚠️ Use a valid MongoDB URI (e.g., from MongoDB Atlas or local DB)
 JWT_SECRET can be any strong random string(get one form UUID wesbsite)
