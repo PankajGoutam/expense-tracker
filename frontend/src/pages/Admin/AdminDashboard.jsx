@@ -4,10 +4,22 @@ import {
   getExpenses,
   updateExpenseStatus,
 } from "../../redux/Slices/expenseSlice";
+import ReceiptModal from "../../utils/ReceiptModal";
+import { openModal } from "../../redux/Slices/uiSlice";
+import { downloadCSV } from "../../redux/Slices/expenseSlice";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
   const { list, loading, error } = useSelector((state) => state.expenses);
+
+  const { csvDownloading, csvError } = useSelector((state) => state.expenses);
+
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleOpenModal = (image) => {
+    setSelectedImage(image);
+    dispatch(openModal());
+  };
 
   const [filters, setFilters] = useState({
     employee: "",
@@ -90,68 +102,92 @@ const AdminDashboard = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-4"></div>
 
-      {/* Filters */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 bg-gray-50 p-4 rounded shadow">
-        <input
-          type="text"
-          placeholder="Filter by Employee"
-          value={filters.employee}
-          onChange={(e) => setFilters({ ...filters, employee: e.target.value })}
-          className="p-2 border rounded"
-        />
-        <input
-          type="text"
-          placeholder="Filter by Category"
-          value={filters.category}
-          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-          className="p-2 border rounded"
-        />
-        <input
-          type="number"
-          placeholder="Min Amount"
-          value={filters.minAmount}
-          onChange={(e) =>
-            setFilters({ ...filters, minAmount: e.target.value })
-          }
-          className="p-2 border rounded"
-        />
-        <input
-          type="number"
-          placeholder="Max Amount"
-          value={filters.maxAmount}
-          onChange={(e) =>
-            setFilters({ ...filters, maxAmount: e.target.value })
-          }
-          className="p-2 border rounded"
-        />
-        <input
-          type="date"
-          value={filters.startDate}
-          onChange={(e) =>
-            setFilters({ ...filters, startDate: e.target.value })
-          }
-          className="p-2 border rounded"
-        />
-        <input
-          type="date"
-          value={filters.endDate}
-          onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-          className="p-2 border rounded"
-        />
-        <button
-          onClick={applyFilters}
-          className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer"
-        >
-          Apply Filters
-        </button>
-        <button
-          onClick={resetFilters}
-          className="bg-gray-400 text-white px-4 py-2 rounded cursor-pointer"
-        >
-          Reset Filters
-        </button>
-      </div>
+      {/* Filter and CSV Controls */}
+      <div className="bg-gray-50 p-4 rounded shadow mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <input
+            type="text"
+            placeholder="Filter by Employee"
+            value={filters.employee}
+            onChange={(e) =>
+              setFilters({ ...filters, employee: e.target.value })
+            }
+            className="p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="text"
+            placeholder="Filter by Category"
+            value={filters.category}
+            onChange={(e) =>
+              setFilters({ ...filters, category: e.target.value })
+            }
+            className="p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="number"
+            placeholder="Min Amount"
+            value={filters.minAmount}
+            onChange={(e) =>
+              setFilters({ ...filters, minAmount: e.target.value })
+            }
+            className="p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="number"
+            placeholder="Max Amount"
+            value={filters.maxAmount}
+            onChange={(e) =>
+              setFilters({ ...filters, maxAmount: e.target.value })
+            }
+            className="p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="date"
+            value={filters.startDate}
+            onChange={(e) =>
+              setFilters({ ...filters, startDate: e.target.value })
+            }
+            className="p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="date"
+            value={filters.endDate}
+            onChange={(e) =>
+              setFilters({ ...filters, endDate: e.target.value })
+            }
+            className="p-2 border border-gray-300 rounded"
+          />
+        </div>
 
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-4">
+          <div className="flex gap-3 w-full sm:w-auto">
+            <button
+              onClick={applyFilters}
+              className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-700 transition"
+            >
+              Apply Filters
+            </button>
+            <button
+              onClick={resetFilters}
+              className="bg-gray-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-gray-500 transition"
+            >
+              Reset Filters
+            </button>
+          </div>
+          <button
+            onClick={() => dispatch(downloadCSV())}
+            disabled={csvDownloading}
+            className="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 transition disabled:opacity-50 w-full sm:w-auto"
+          >
+            {csvDownloading ? "Downloading..." : "Export CSV"}
+          </button>
+        </div>
+
+        {csvError && (
+          <p className="text-red-500 text-sm mt-2 text-center">{csvError}</p>
+        )}
+      </div>
+      {/* Table Controls */}
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
@@ -173,6 +209,7 @@ const AdminDashboard = () => {
                 <th className="text-left p-3">Notes</th>
                 <th className="text-left p-3">Status</th>
                 <th className="text-left p-3">Date</th>
+                <th className="text-left p-3">Receipt</th>
               </tr>
             </thead>
             <tbody>
@@ -200,12 +237,26 @@ const AdminDashboard = () => {
                   <td className="p-3">
                     {new Date(expense.date).toLocaleDateString()}
                   </td>
+                  <td className="px-2 py-2">
+                    {expense.receipt ? (
+                      <button
+                        onClick={() => handleOpenModal(expense.receipt)}
+                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                      >
+                        View Receipt
+                      </button>
+                    ) : (
+                      <span className="text-gray-400">No Receipt</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+      {/* 🔁 Modals */}
+      <ReceiptModal selectedImage={selectedImage} />
     </div>
   );
 };

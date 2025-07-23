@@ -55,6 +55,31 @@ export const updateExpenseStatus = createAsyncThunk(
   }
 );
 
+export const downloadCSV = createAsyncThunk(
+  "expenses/downloadCSV",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get("/api/expenses/export/csv", {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([res.data], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "expenses.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      return true;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data?.message || "Download failed");
+    }
+  }
+);
+
 // Slice
 const expenseSlice = createSlice({
   name: "expenses",
@@ -62,6 +87,8 @@ const expenseSlice = createSlice({
     list: [],
     loading: false,
     error: null,
+    csvDownloading: false,
+    csvError: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -106,6 +133,18 @@ const expenseSlice = createSlice({
       .addCase(updateExpenseStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // GET for CSV handler
+      .addCase(downloadCSV.pending, (state) => {
+        state.csvDownloading = true;
+        state.csvError = null;
+      })
+      .addCase(downloadCSV.fulfilled, (state) => {
+        state.csvDownloading = false;
+      })
+      .addCase(downloadCSV.rejected, (state, action) => {
+        state.csvDownloading = false;
+        state.csvError = action.payload;
       });
   },
 });

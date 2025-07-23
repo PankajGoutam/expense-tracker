@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 const Layout = ({ children }) => {
   const { user } = useSelector((state) => state.auth);
   const role = user?.role;
+  
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Navbar */}

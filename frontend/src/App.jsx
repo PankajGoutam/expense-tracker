@@ -4,7 +4,6 @@ import Layout from "./layouts/Layout";
 import Insights from "./pages/Admin/Insights";
 import AuditLogs from "./pages/Admin/AuditLogs";
 import Dashboard from "./components/Dashboard"
-import AddExpenses from "./pages/Employee/AddExpenses";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
