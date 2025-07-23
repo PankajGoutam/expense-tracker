@@ -47,13 +47,24 @@ A full-stack application for remote teams to track and review expenses with role
 ```bash
 cd server
 npm install
-npm run dev
+```
 
 ➕ Create .env file inside /server directory:
+
+PORT= your port number
+MONGO_URI= your_mongodb_connection_string
+JWT_SECRET= your_jwt_secret_key
+
+⚠️ Use a valid MongoDB URI (e.g., from MongoDB Atlas or local DB)
+JWT_SECRET can be any strong random string(get one form UUID wesbsite)
+
+```bash
+npm run dev
+```
 
 ### Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
-
+```
