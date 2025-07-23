@@ -2,24 +2,22 @@
 
 A full-stack application for remote teams to track and review expenses with role-based access and visual insights.
 
----
+## 📁 Structure
 
-## 📁 Folder Structure
+## root/
+       ├── server
+       └── frontend
 
-root/
-├── server # Backend (Node.js, Express, MongoDB)
-└── frontend # Frontend (React, Redux, Recharts)
-
-
----
 
 ## 🔑 Features
 
 - 🔐 **Authentication & RBAC** (JWT-based):
   - Roles: `employee` and `admin`
+
 - 🧾 **Employees** can:
   - Add/view their own expenses
   - Upload and view receipt images
+
 - 🛠️ **Admins** can:
   - View all expenses
   - Filter expenses by:
@@ -33,7 +31,6 @@ root/
   - Export expenses as CSV
   - Visualize insights with charts (category-wise and monthly breakdown)
 
-
 ## 🛠️ Tech Stack
 
 | Layer     | Tech                                     |
@@ -43,30 +40,20 @@ root/
 | Auth      | JWT (JSON Web Tokens)                    |
 | Charts    | Recharts                                 |
 
----
+## 🚀 Setup
 
-## ⚙️ Local Setup Instructions
+### Backend
 
-### 📦 1. Backend Setup
-
+```bash
 cd server
 npm install
+npm run dev
 
 ➕ Create .env file inside /server directory:
 
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-
-⚠️ You must use a valid MongoDB URI (e.g., from MongoDB Atlas or local MongoDB)
-JWT_SECRET can be any random strong string
-
-🚀 Start Backend Server
-
-npm run dev
-
-💻 2. Frontend Setup
-
+### Frontend
+```bash
 cd frontend
 npm install
 npm run dev
+
